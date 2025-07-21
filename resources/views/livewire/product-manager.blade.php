@@ -7,12 +7,13 @@
     @endif
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">Product List</h4>
-        <button wire:click="create" class="btn btn-success">
-            <i class="fas fa-plus"></i> Add New Product
-        </button>
-    </div>
+    <div class="mb-4">
+    <h4 class="mb-2">Product List</h4>
+    <button wire:click="create" class="btn btn-success">
+        <i class="fas fa-plus"></i> Add New Product
+    </button>
+</div>
+
 
     <!-- Products Table -->
     <div class="card">

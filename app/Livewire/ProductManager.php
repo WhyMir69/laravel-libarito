@@ -30,7 +30,7 @@ class ProductManager extends Component
         'quantity' => 'required|integer|min:0',
         'price' => 'required|numeric|min:0',
         'description' => 'required|string',
-        'image' => 'nullable|image|max:2048', // max 2MB
+        'image' => 'nullable|image|max:2048', 
     ];
 
     public function create()
