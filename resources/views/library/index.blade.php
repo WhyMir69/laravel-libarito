@@ -5,9 +5,20 @@
     <div class="col-md-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2><i class="bi bi-book"></i> Libretto Library System</h2>
-            <a href="{{ route('library.test') }}" class="btn btn-info" target="_blank">
-                <i class="bi bi-gear"></i> Test Relationships
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('books.create') }}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Add Book
+                </a>
+                <a href="{{ route('authors.create') }}" class="btn btn-primary">
+                    <i class="bi bi-person-plus"></i> Add Author
+                </a>
+                <a href="{{ route('genres.create') }}" class="btn btn-warning">
+                    <i class="bi bi-tags"></i> Add Genre
+                </a>
+                <a href="{{ route('library.test') }}" class="btn btn-info" target="_blank">
+                    <i class="bi bi-gear"></i> Test Relationships
+                </a>
+            </div>
         </div>
 
         <!-- Statistics Cards -->

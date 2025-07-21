@@ -3,59 +3,77 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Review;
+use Illuminate\Support\Facades\DB;
 use App\Models\Book;
-use App\Models\User;
 
 class ReviewSeeder extends Seeder
 {
     public function run()
     {
-        // Get books
-        $books = Book::all();
+        $bookIds = Book::pluck('id')->toArray();
 
-        $sampleReviews = [
-            [
-                'content' => 'An absolutely magical story that captivated me from the first page.',
-                'rating' => 5,
-            ],
-            [
-                'content' => 'A gripping tale with complex characters and an intricate plot.',
-                'rating' => 4,
-            ],
-            [
-                'content' => 'Classic mystery at its finest. Agatha Christie never disappoints.',
-                'rating' => 5,
-            ],
-            [
-                'content' => 'Terrifyingly good! Stephen King knows how to create atmosphere.',
-                'rating' => 4,
-            ],
-            [
-                'content' => 'A timeless romance that never gets old. Beautiful writing.',
-                'rating' => 5,
-            ],
-        ];
-
-        foreach ($books as $index => $book) {
-            if (isset($sampleReviews[$index])) {
-                $reviewData = $sampleReviews[$index];
-                $reviewData['book_id'] = $book->id;
-                Review::create($reviewData);
-            }
+        if (empty($bookIds)) {
+            $this->command->warn('No books found, skipping reviews.');
+            return;
         }
 
-        // Add some additional random reviews
-        foreach ($books as $book) {
-            // Add 1-2 more reviews per book
-            $additionalReviews = rand(1, 2);
-            for ($i = 0; $i < $additionalReviews; $i++) {
-                Review::create([
-                    'content' => 'This is a sample review for ' . $book->title . '. Great read!',
-                    'rating' => rand(3, 5),
-                    'book_id' => $book->id,
-                ]);
-            }
-        }
+        DB::table('reviews')->insert([
+            [
+                'book_id' => $bookIds[array_rand($bookIds)],
+                'content' => 'Absolutely magical! A wonderful start to the series.',
+                'rating' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'book_id' => $bookIds[array_rand($bookIds)],
+                'content' => 'Great book for all ages. Really enjoyed reading it.',
+                'rating' => 4,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'book_id' => $bookIds[array_rand($bookIds)],
+                'content' => 'Epic fantasy with incredible world-building.',
+                'rating' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'book_id' => $bookIds[array_rand($bookIds)],
+                'content' => 'Classic mystery with a brilliant plot twist.',
+                'rating' => 4,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'book_id' => $bookIds[array_rand($bookIds)],
+                'content' => 'Terrifying and brilliantly written horror novel.',
+                'rating' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'book_id' => $bookIds[array_rand($bookIds)],
+                'content' => 'Timeless romance with witty dialogue.',
+                'rating' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'book_id' => $bookIds[array_rand($bookIds)],
+                'content' => 'Complex characters and intricate plot lines.',
+                'rating' => 4,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'book_id' => $bookIds[array_rand($bookIds)],
+                'content' => 'Perfect introduction to the wizarding world.',
+                'rating' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
     }
 }

@@ -10,9 +10,6 @@ use App\Models\Review;
 
 class LibraryController extends Controller
 {
-    /**
-     * Display the library dashboard
-     */
     public function index()
     {
         $books = Book::with(['author', 'genres', 'reviews'])->get();
@@ -29,77 +26,159 @@ class LibraryController extends Controller
         return view('library.index', compact('books', 'authors', 'genres', 'stats'));
     }
 
-    /**
-     * Display books by author
-     */
     public function booksByAuthor($id)
     {
         $author = Author::with(['books.genres', 'books.reviews'])->findOrFail($id);
         return view('library.books-by-author', compact('author'));
     }
 
-    /**
-     * Display books by genre
-     */
     public function booksByGenre($id)
     {
         $genre = Genre::with(['books.author', 'books.reviews'])->findOrFail($id);
         return view('library.books-by-genre', compact('genre'));
     }
 
-    /**
-     * Display book details with reviews
-     */
     public function bookDetails($id)
     {
         $book = Book::with(['author', 'genres', 'reviews.user'])->findOrFail($id);
         return view('library.book-details', compact('book'));
     }
 
-    /**
-     * Test the relationships
-     */
     public function testRelationships()
     {
         $results = [];
 
-        // Test Author to Books relationship
         $author = Author::with('books')->first();
+        $book = Book::with(['author', 'genres', 'reviews'])->first();
+
         $results['author_books'] = [
-            'author' => $author->name,
-            'books_count' => $author->books->count(),
-            'books' => $author->books->pluck('title')->toArray()
+            'author' => $author?->name,
+            'books_count' => $author?->books->count(),
+            'books' => $author?->books->pluck('title')->toArray()
         ];
 
-        // Test Book to Author relationship
-        $book = Book::with('author')->first();
         $results['book_author'] = [
-            'book' => $book->title,
-            'author' => $book->author->name
+            'book' => $book?->title,
+            'author' => $book?->author->name
         ];
 
-        // Test Book to Genres (Many-to-Many)
-        $bookWithGenres = Book::with('genres')->first();
         $results['book_genres'] = [
-            'book' => $bookWithGenres->title,
-            'genres' => $bookWithGenres->genres->pluck('name')->toArray()
+            'book' => $book?->title,
+            'genres' => $book?->genres->pluck('name')->toArray()
         ];
 
-        // Test Book to Reviews
-        $bookWithReviews = Book::with('reviews')->first();
         $results['book_reviews'] = [
-            'book' => $bookWithReviews->title,
-            'reviews_count' => $bookWithReviews->reviews->count(),
-            'average_rating' => $bookWithReviews->average_rating,
-            'reviews' => $bookWithReviews->reviews->take(3)->map(function($review) {
+            'book' => $book?->title,
+            'reviews_count' => $book?->reviews->count(),
+            'average_rating' => $book?->reviews->avg('rating'),
+            'reviews' => $book?->reviews->take(3)->map(function ($review) {
                 return [
-                    'reviewer' => $review->reviewer_name,
                     'rating' => $review->rating,
-                    'content' => substr($review->content, 0, 100) . '...'
+                    'content' => $review->content,
                 ];
             })->toArray()
         ];
 
         return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+    }
+
+    // ------------------ Book CRUD ------------------
+
+    public function createBook()
+    {
+        $authors = Author::all();
+        $genres = Genre::all();
+        return view('books.create', compact('authors', 'genres'));
+    }
+
+    public function storeBook(Request $request)
+    {
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'author_id' => 'required|exists:authors,id',
+            'genres' => 'array',
+            'genres.*' => 'exists:genres,id',
+        ]);
+
+        $book = Book::create([
+            'title' => $data['title'],
+            'author_id' => $data['author_id'],
+        ]);
+
+        $book->genres()->sync($data['genres'] ?? []);
+
+        return redirect()->route('library.index')->with('success', 'Book added!');
+    }
+
+    public function editBook(Book $book)
+    {
+        $authors = Author::all();
+        $genres = Genre::all();
+        return view('books.edit', compact('book', 'authors', 'genres'));
+    }
+
+    public function updateBook(Request $request, Book $book)
+    {
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'author_id' => 'required|exists:authors,id',
+            'genres' => 'array',
+            'genres.*' => 'exists:genres,id',
+        ]);
+
+        $book->update([
+            'title' => $data['title'],
+            'author_id' => $data['author_id'],
+        ]);
+
+        $book->genres()->sync($data['genres'] ?? []);
+
+        return redirect()->route('library.index')->with('success', 'Book updated!');
+    }
+
+    public function destroyBook(Book $book)
+    {
+        $book->delete();
+        return redirect()->route('library.index')->with('success', 'Book deleted!');
+    }
+
+    // ------------------ Author CRUD ------------------
+
+    public function createAuthor()
+    {
+        return view('authors.create');
+    }
+
+    public function storeAuthor(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        Author::create([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->route('library.index')->with('success', 'Author added!');
+    }
+
+    // ------------------ Genre CRUD ------------------
+
+    public function createGenre()
+    {
+        return view('genres.create');
+    }
+
+    public function storeGenre(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        Genre::create([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->route('library.index')->with('success', 'Genre added!');
     }
 }

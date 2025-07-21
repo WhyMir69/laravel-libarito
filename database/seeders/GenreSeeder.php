@@ -3,27 +3,21 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Genre;
+use Illuminate\Support\Facades\DB;
 
 class GenreSeeder extends Seeder
 {
     public function run()
     {
-        $genres = [
-            ['name' => 'Fantasy'],
-            ['name' => 'Mystery'],
-            ['name' => 'Romance'],
-            ['name' => 'Science Fiction'],
-            ['name' => 'Horror'],
-            ['name' => 'Historical Fiction'],
-            ['name' => 'Adventure'],
-            ['name' => 'Young Adult'],
-            ['name' => 'Classic Literature'],
-            ['name' => 'Thriller'],
-        ];
-
-        foreach ($genres as $genre) {
-            Genre::create($genre);
-        }
+        DB::table('genres')->insert([
+            ['name' => 'Fiction', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Mystery', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Romance', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Science Fiction', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Fantasy', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Historical Fiction', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Dystopian', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Classic Literature', 'created_at' => now(), 'updated_at' => now()],
+        ]);
     }
 }
