@@ -10,11 +10,16 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
+<<<<<<< HEAD
         'product_code',
+=======
+        'code',
+>>>>>>> 4db59ba1938de0e418ef7c0900ff3dbdfa47e0ec
         'name',
         'quantity',
         'price',
         'description',
+<<<<<<< HEAD
         'image',
     ];
 
@@ -27,4 +32,8 @@ class Product extends Model
     {
         return $this->image ? asset('storage/' . $this->image) : null;
     }
+=======
+        'image'
+    ];
+>>>>>>> 4db59ba1938de0e418ef7c0900ff3dbdfa47e0ec
 }
